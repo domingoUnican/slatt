@@ -4,7 +4,7 @@ Package: corr
 Creation: november 25th, 2008, and thoroughly revised afterwards
 Programmers: JLB
 
-Purpose: 
+Purpose:
 .implement correspondence tightening
 ..(auxiliary process for rule mining)
 
@@ -27,15 +27,24 @@ class corr(dict):
     def tighten(self,progcnt=None):
         "may use a verbosity object progcnt to report progress"
         ticking = (progcnt!=None)
-        for e in self.keys():
+        # max_elements contains the maximal ee, such that g in self[ee]
+        max_elements = dict()
+        for ee in self:
+            for g in self[ee]:
+                # We check the previous elements, and add a new one if maximal
+                temp = max_elements.get(g, set())
+                if not any(ee < e for e in temp):
+                    # If we add a new maximal, it is possible to remove some.
+                    temp = {e for e in temp if not e < ee}
+                    temp.add(ee)
+                    max_elements[g] = temp
+        # Now, to check the conditions, we check the values in max_elements
+        for e in self:
             if ticking:
                 progcnt.tick()
             valids = []
             for g in self[e]:
-                for ee in self.keys():
-                    if e < ee and g in self[ee]:
-                        break
-                else:
+                if not any(e <ee for ee in max_elements[g]):
                     valids.append(g)
             self[e] = valids
 
@@ -69,7 +78,3 @@ if __name__=="__main__":
         print e, ":", c[e]
 
     print "==="
-
-
-
-
