@@ -38,7 +38,7 @@ class rerulattice(slattice):
     def __init__(self,supp,datasetfile="",v=None,xmlinput=False,externalminer=True):
         "call slattice to get the closures and minimal generators"
         slattice.__init__(self,supp,datasetfile,v,xmlinput=xmlinput,externalminer=externalminer)
-        
+
     def _faces(self,itst,listpred):
         "listpred assumed immediate preds of itst - make hypergraph of differences"
         itst = set(itst)
@@ -51,7 +51,7 @@ class rerulattice(slattice):
         thresholds expected in [0,1] to rescale here
         """
 ##        if confthr == 1:
-##            return self.findmingens(suppthr)        
+##            return self.findmingens(suppthr)
         sthr = int(self.scale*suppthr)
         cthr = int(self.scale*confthr)
 ##        self.v.zero(100)
@@ -66,7 +66,7 @@ class rerulattice(slattice):
                 "this is the test of Prop 9 in Kryszkiewicz's paper"
                 ants[nod] = []
                 "computing valid antecedents ..."
-                
+
                 for node in self.preds[nod]+[nod]:
                     for m in self.mingens[node]:
                         if m<nod and c1<cthr*m.supp and cthr*m.supp <=c2 and c2<cthr*m.mns:
@@ -74,7 +74,7 @@ class rerulattice(slattice):
 ##        self.v.zero(500)
 ##        self.v.messg("...done.\n")
         return ants
-    
+
     def mineRR(self,suppthr,confthr,forget=False):
         """
         compute the representative rules for the given confidence;
@@ -82,13 +82,13 @@ class rerulattice(slattice):
         thresholds expected in [0,1] to rescale here
         """
         if confthr == 1:
-            return self.findmingens(suppthr)        
+            return self.findmingens(suppthr)
         sthr = int(self.scale*suppthr)
         cthr = int(self.scale*confthr)
         self.v.zero(100)
         self.v.inimessg("Computing representative rules at confidence "+str(confthr)+" using our heuristic...")
         ants = corr()
-        self.v.messg("computing antecedents...")        
+        self.v.messg("computing antecedents...")
         for nod in self.closeds:
             self.v.tick()
             mxgs=0
@@ -100,7 +100,7 @@ class rerulattice(slattice):
                 if mxgs<node.supp and cthr*node.supp<=self.scale*nod.supp:
                     mxgs=node.supp
             c1=self.scale*nod.mxs
-            c2=self.scale*nod.supp             
+            c2=self.scale*nod.supp
             if cthr*mxgs>c1:
                 "this is the test of Prop 5 in our EGC paper"
                 ants[nod] = []
@@ -112,7 +112,7 @@ class rerulattice(slattice):
         self.v.zero(500)
         self.v.messg("...done.\n")
         return ants
-    
+
     def mineClosureRR(self,suppthr,confthr,forget=False):
         """
         compute the representative rules for the given confidence;
@@ -120,7 +120,7 @@ class rerulattice(slattice):
         thresholds expected in [0,1] to rescale here
         """
         if confthr == 1:
-            return self.findGDgens(suppthr)       
+            return self.findGDgens(suppthr)
         sthr = int(self.scale*suppthr)
         cthr = int(self.scale*confthr)
 ##        self.v.zero(100)
@@ -128,10 +128,10 @@ class rerulattice(slattice):
         ants = corr()
 ##        self.v.messg("computing antecedents...")
         for nod in self.closeds:
-##            self.v.tick()         
+##            self.v.tick()
             mxgs=0
             foundyesants=False
-            for node in self.preds[nod]:           
+            for node in self.preds[nod]:
                 if mxgs<node.supp and cthr*node.supp<=self.scale*nod.supp:
                     mxgs=node.supp
                     foundyesants=True
@@ -142,7 +142,7 @@ class rerulattice(slattice):
                 elif len(mingens[0])<nod.card:
                     mxgs=nod.supp
             c1=self.scale*nod.mxs
-            c2=self.scale*nod.supp             
+            c2=self.scale*nod.supp
             if cthr*mxgs>c1 and mxgs>nod.supp:
                 "this is the test of Prop 3 in our IEEE Trans paper"
                 ants[nod] = []
@@ -153,10 +153,11 @@ class rerulattice(slattice):
 ##        self.v.zero(500)
 ##        self.v.messg("...done.\n")
         return ants
-    
+
 
 if __name__ == "__main__":
     from slarule import printrules
+    print("Starting..")
     out_file = "output.txt"
     if len(sys.argv)>1:
         out_file=sys.argv[1]
@@ -190,6 +191,3 @@ if __name__ == "__main__":
                     output.write("%d repr rules found with %s at conf %.2f"%(printrules(miners[i],rl.nrtr,outrulesfile,doprint=True),alg,ccc)+"\n")
 
     output.close()
-
-
-
