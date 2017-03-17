@@ -62,6 +62,8 @@ class closminer:
         self.read_from_XML_file = xmlinput
         if v==None:
             self.v = verbosity()
+        elif v==False:
+            self.v=verbosity(False)
         else:
             self.v = v
         self.U = set([])
@@ -357,12 +359,8 @@ class closminer:
 
 if __name__=="__main__":
 
-    dsfnm = "e13"
+    dsfnm = "./datasets/test"
     supp = 0.001
-##    dsfnm = "pumsb_star"
-##    supp = 0.7
-##    dsfnm = "lenses_recoded"
-##    supp = 0.1
 
 
     c = closminer(supp,dsfnm,xmlinput=True)

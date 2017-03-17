@@ -1,4 +1,5 @@
 from rerulattice import rerulattice
+from closurererulattice import clrerulattice
 from slarule import printrules
 
 class job:
@@ -14,13 +15,13 @@ class job:
         self.datasetfilename = datasetfilename
         self.supp = supp
         self.rerulatt = None
+        self.clrerulatt = None
 
     def run(self,basis,conf=1.0,show=False,outrules=False,verbose=True):
         """
         the run method consists of
-          target basis ("B*", "RR", or "GD")
-          confidence threshold in [0,1],
-          confidence boost threshold in [1,infty] recommended in [1,2], say 1.1
+          target basis ("GenRR", "RRGenerator", or "RRClosureGenerator")
+          confidence threshold in [0,1),
           show: whether rules will be shown interactively
           outrules: whether rules will be stored in a file
         """
@@ -42,25 +43,16 @@ class job:
             rules = self.rerulatt.mineRR(self.supp,conf)
             secondminer = self.rerulatt.mineRR
         elif basis == "RRClosureGenerator":
-            if self.rerulatt is None:
-                self.rerulatt = rerulattice(self.supp,self.datasetfilename,xmlinput=True)
-            self.rerulatt.xmlize()
-            self.rerulatt.v.verb = verbose and self.verb 
-            latt = self.rerulatt
-            rules = self.rerulatt.mineClosureRR(self.supp,conf)
-            secondminer = self.rerulatt.mineClosureRR
-        elif basis == "GD":
-            conf = 1.0
-            if self.rerulatt is None:
-                self.rerulatt = rerulattice(self.supp,self.datasetfilename)
-            self.rerulatt.v.verb = verbose and self.verb 
-            latt = self.rerulatt
-            self.rerulatt.findGDgens(self.supp)
-            rules = self.rerulatt.GDgens
-            secondminer = self.rerulatt.mineRR
+            if self.clrerulatt is None:
+                self.clrerulatt = clrerulattice(self.supp,self.datasetfilename,xmlinput=True)
+            self.clrerulatt.xmlize()
+            self.clrerulatt.v.verb = verbose and self.verb 
+            latt = self.clrerulatt
+            rules = self.clrerulatt.mineClosureRR(self.supp,conf)
+            secondminer = self.clrerulatt.mineClosureRR
         else:
             "a print because there may be no lattice and no verbosity - to correct soon"
-            print "Basis unavailable; options: GenRR, RRGenerator, RRClosureGenerator, GD"
+            print "Basis unavailable; options: GenRR, RRGenerator, RRClosureGenerator"
             return 0
         count = None
         if outrules:
@@ -80,7 +72,5 @@ if __name__=="__main__":
     testjob.run("RRClosureGenerator",conf=0.7,show=True)
     testjob.run("RRGenerator",conf=0.7,show=False)
     testjob.run("GenRR",conf=0.7,outrules=True,show=False)
-    testjob.run("GD")
-    testjob.run("GD",outrules=True)
     cnt = testjob.run("GenRR",conf=0.7,show=True)
     print cnt

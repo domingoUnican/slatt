@@ -4,7 +4,7 @@ Package: rerulattice
 Programmers: JLB, CT
 Revised by: CT
 
-Inherits from slattice, which brings cuts, mingens, and GDgens
+Inherits from slattice, which brings mingens
 
 Offers:
 .mineKrRR to compute a subset of representative rules
@@ -12,19 +12,18 @@ Offers:
 .mineRR to compute the representative rules for a given confidence
   by our complete variant of Kryszkiewicz,
 .mineClosureRR to compute a closure-aware set of representative rules
-
-
+  using precomputed values of mingens; the method with the same name
+  in closurererulattice would give the same output but it is faster
+  because it avoids computing all minimal generators
+  
 
 Notes/ToDo:
-.hist fields for the three algorithms
-.want to be able to use it on file containing larger-support closures
 .note: sometimes the supp is lower than what minsupp indicates; this may be
   due to an inappropriate closures file, or due to the fact that indeed there
   are no closed sets in the dataset in between both supports (careful with
   their different scales)
 .revise and enlarge the local testing
 .revise ticking rates
-.find a way to print GDGens
 """
 import time
 from slattice import slattice
@@ -151,14 +150,14 @@ if __name__ == "__main__":
         out_file=sys.argv[1]
     output=open(out_file,"w")
     current_dir="./datasets/"
-##    tests={"prueba":[0.20]}
-    tests={"retail":[0.001,0.0005],"adult":[0.01,0.005],"accidents":[0.5,0.4]}
+    tests={"test":[0.20]}
+##    tests={"retail":[0.001,0.0005],"adult":[0.01,0.005],"accidents":[0.5,0.4]}
     for filename in tests.keys():
         output.write(filename+"\n")
         for supp in tests[filename]:
             output.write(str(supp)+"\n")
             time00=time.time()
-            rl = rerulattice(supp,current_dir+filename)
+            rl = rerulattice(supp,current_dir+filename,v=False)
             time0=time.time()
             output.write("rerulattice: %3.3f"%(time0-time00)+"\n")
             for ccc in [0.9,0.8,0.7]:
@@ -171,7 +170,7 @@ if __name__ == "__main__":
                 ClosureRR =rl.mineClosureRR(supp,ccc)
                 time4=time.time()
                 times=[time2-time1,time3-time2,time4-time3]
-                algorithms=["Kr","RR","ClosureRR"]
+                algorithms=["Kr","RR","Bstar"]
                 miners=[KrRRants,RRants,ClosureRR]
                 for i,alg in enumerate(algorithms):
                     outrulesfile = file(current_dir+filename+alg+("_c%2.3f"%ccc)+("_s%2.4f"%supp)+".txt","w")

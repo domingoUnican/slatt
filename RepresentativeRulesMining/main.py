@@ -20,14 +20,13 @@ todayjob = job("./datasets/test",0.4)
 
 # compute representative rules with Kryszkiewicz incomplete heuristic,
 # write the rules into a file 
-todayjob.run("GenRR",0.75,show=False,outrules=False)
+todayjob.run("GenRR",0.7,show=False,outrules=True)
 
-# compute B* basis, write the rules into a file 
-todayjob.run("RRGenerator",0.75,show=False,outrules=False)
+# compute B* basis, show in console and do not write on file 
+todayjob.run("RRGenerator",0.8,show=True,outrules=False)
 
 # compute representative rules, show in console and write on file
-todayjob.run("RRClosureGenerator",0.75,show=False,outrules=True)
+todayjob.run("RRClosureGenerator",0.9,show=True,outrules=True)
 
-# compute GD basis for conf 1
-todayjob.run("GD",show=False)
+
 
