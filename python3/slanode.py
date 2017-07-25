@@ -25,32 +25,31 @@ Notes:
  copy.
 
 ToDo:
-.eliminate str2node
-.try Python 3.0 to inform the support upon __init__() and simplify (could then remove auxitset, set2node, str2node)
 .add initialization for output from other closure miners such as Zaki's RULES
 .some day the contents should be able to accommodate trees and sequences and...
 """
 
-from decorator import Structure
 import copy
 
-def str2node(string=""):
-    sepsupp = string.split('/')
-    cont = sepsupp[0].strip('( ').split()
-    supp = 0
-    if len(sepsupp)>1:
-        "comes with support info"
-        supp = int(sepsupp[1].strip(')%\n\r'))
-    return slanode(cont, supp = supp)
+class slanode(frozenset):
 
 
-class slanode(Structure, frozenset):
-
-    _fields = [('contents', []), # The actual iterable
-               ('supp', 0), # support, initializate to 0
-               ('card', len, ['contents']), # card =  len(contents)
-               ('mxs', -1), ('mns', -1), ('gmxs',-1)]
-
+    def __new__(cls, contents=[], supp=0, mxs = -1, mns = -1, gmxs = -1):
+        cont = contents
+        if isinstance(contents, str):
+            sepsupp = contents.split('/')
+            cont = sepsupp[0].strip('( ').split()
+            supp = 0
+            if len(sepsupp)>1:
+                "comes with support info"
+                supp = int(sepsupp[1].strip(')%\n\r'))
+        s =  frozenset.__new__(cls, cont)
+        s.supp = supp
+        s.mxs = mxs
+        s.mns = -1
+        s.gmxs = -1
+        s.card = len(contents)
+        return s
 
     def __str__(self,trad={}):
         """
