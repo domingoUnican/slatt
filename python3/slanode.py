@@ -31,19 +31,18 @@ ToDo:
 
 import copy
 
+
 class slanode(frozenset):
 
-
-    def __new__(cls, contents=[], supp=0, mxs = -1, mns = -1, gmxs = -1):
+    def __new__(cls, contents=[], supp=0, mxs=-1, mns=-1, gmxs=-1):
         cont = contents
         if isinstance(contents, str):
             sepsupp = contents.split('/')
             cont = sepsupp[0].strip('( ').split()
-            supp = 0
-            if len(sepsupp)>1:
+            if len(sepsupp) > 1:
                 "comes with support info"
                 supp = int(sepsupp[1].strip(')%\n\r'))
-        s =  frozenset.__new__(cls, cont)
+        s = frozenset.__new__(cls, cont)
         s.supp = supp
         s.mxs = mxs
         s.mns = -1
@@ -51,19 +50,15 @@ class slanode(frozenset):
         s.card = len(contents)
         return s
 
-    def __str__(self,trad={}):
+    def __str__(self, trad={}):
         """
         prettyprint of itemset: support omitted if zero
         optional element translator trad
         """
         s = ""
         for el in sorted(self):
-            if  el in trad.keys():
-                el = trad[el]
-            if s=="":
-                s = str(el)
-            else:
-                s += "," + str(el)
+            el = trad.get(el, el)  # get the value of el if exists
+            s = s + "," + str(el) if s else str(el)  # concatenate str(el) if s
         s = "{ " + s + " }"
         if self.supp > 0:
             s = s + " (" + str(self.supp) + ")"
@@ -72,17 +67,19 @@ class slanode(frozenset):
     def __repr__(self, trad={}):
         return self.__str__(trad=trad)
 
-    def revise(self,c):
+    def revise(self, c):
+        '''
+        Return a copy, changing the contents of the node
+        '''
         return copy.deepcopy(slanode(contents=c,
                                      supp=self.supp,
                                      mxs=self.mxs,
                                      mns=self.mns,
                                      gmxs=self.gmxs))
+
     def copy(self):
         return copy.deepcopy(self)
 
 if __name__=="__main__":
     "some little testing needed here"
     pass
-
-##    print "slatt module itset called as main and running as test..."
